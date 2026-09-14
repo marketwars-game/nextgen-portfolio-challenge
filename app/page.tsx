@@ -156,7 +156,7 @@ function JoinForm() {
           PORTFOLIO CHALLENGE
         </p>
         <p className="text-[11px] sm:text-xs tracking-wide mt-1 text-gray-400">
-          KKP YoungGen Edition
+          KKP Next Gen Edition
         </p>
       </div>
 

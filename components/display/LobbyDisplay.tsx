@@ -42,7 +42,7 @@ export default function LobbyDisplay({ players, roomId, joinUrl }: { players: an
               <span style={{ color: 'var(--mw-rose)' }}>WARS</span>
             </h1>
             <p className="text-xl font-extrabold tracking-[4px]" style={{ color: 'rgba(255,255,255,0.82)' }}>PORTFOLIO CHALLENGE</p>
-            <p className="text-sm tracking-[2px] mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>KKP YoungGen Edition</p>
+            <p className="text-sm tracking-[2px] mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>KKP Next Gen Edition</p>
             <div className="mt-3 h-1 w-16 rounded-full" style={{ background: 'linear-gradient(90deg, var(--mw-violet), var(--mw-rose))' }} />
           </div>
           <div>

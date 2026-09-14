@@ -1,7 +1,7 @@
 // FILE: app/api/game/phase/route.ts
-// VERSION: B16d-v1 — Add "set" action for MC Final step navigation (final / final_podium / final_awards / final_ranking)
-// LAST MODIFIED: 11 Jun 2026
-// HISTORY: B3 created | B4 bug fix phase flow | B5 auto-calculate + event_result phase | B9 duel pair/resolve | B12-UX start → year_intro | B13-BATCH1 quiz bonus + remove duel | B15 Promise.all + portfolio_submitted_round | B16d set action (final steps)
+// VERSION: NXG-V0 — stamp rooms.phase_started_at on every phase change (start / next / end / set) → drives the NXG-V3 countdown on all screens
+// LAST MODIFIED: 10 Sep 2026
+// HISTORY: B3 created | B5 auto-calculate + event_result | B12-UX start → year_intro | B13 quiz bonus | B15 Promise.all | B16d set action (final steps) | YG-V0..V6.3 unchanged | NXG-V0 phase_started_at
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -72,6 +72,7 @@ export async function POST(request: Request) {
           status: 'playing',
           current_phase: 'year_intro',
           current_round: 1,
+          phase_started_at: new Date().toISOString(),
         })
         .eq('id', room_id);
 
@@ -105,6 +106,7 @@ export async function POST(request: Request) {
         .update({
           status: 'finished',
           current_phase: 'final',
+          phase_started_at: new Date().toISOString(),
         })
         .eq('id', room_id);
 
@@ -143,6 +145,7 @@ export async function POST(request: Request) {
         .update({
           status: 'finished',
           current_phase: target,
+          phase_started_at: new Date().toISOString(),
         })
         .eq('id', room_id);
 
@@ -190,6 +193,7 @@ export async function POST(request: Request) {
           status: next.status,
           current_phase: next.phase,
           current_round: next.round,
+          phase_started_at: new Date().toISOString(),
         })
         .eq('id', room_id);
 

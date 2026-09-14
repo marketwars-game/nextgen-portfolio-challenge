@@ -1,7 +1,7 @@
 // FILE: lib/sound.ts — Display sound registry (18 assets) + phase→BGM map
-// VERSION: B16d-v1 — research_reveal → bgm_results; final steps BGM (suspense→final)
-// LAST MODIFIED: 11 Jun 2026
-// HISTORY: B16a-BATCH1 created — 5 BGM loops + 13 SFX one-shots + PHASE_BGM map | B16d research_reveal mood + final_podium/awards/ranking BGM
+// VERSION: NXG-V0 — PHASE_BGM.shock = bgm_suspense (Mid-Year Shock screen) + reveal = bgm_suspense; assets unchanged (18 files carried from YG)
+// LAST MODIFIED: 10 Sep 2026
+// HISTORY: B16a-BATCH1 created — 5 BGM loops + 13 SFX one-shots + PHASE_BGM map | B16d research_reveal mood + final steps BGM | YG-V0..V6.3 unchanged | NXG-V0 shock/reveal moods
 //
 // ไฟล์เสียงทั้งหมดวางที่ /public/sounds/<name>.mp3 (ตั้งชื่อให้ตรง key เป๊ะ)
 // โค้ด graceful: ถ้าไฟล์ไหนยังไม่มา จะเงียบเฉยๆ ไม่พัง
@@ -63,6 +63,8 @@ export const PHASE_BGM: Record<string, BgmKey> = {
   research: 'bgm_play',
   research_reveal: 'bgm_results', // B16d: reveal มู้ดเฉลย (เปลี่ยนจาก bgm_play)
   invest: 'bgm_play',
+  reveal: 'bgm_suspense',         // NXG-V0: all allocations on screen — hold tension
+  shock: 'bgm_suspense',          // NXG-V0: Mid-Year Shock (Ch2) — portfolios locked
   chance_card: 'bgm_play',
   year_intro: 'bgm_suspense',
   market_open: 'bgm_suspense',

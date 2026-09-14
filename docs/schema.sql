@@ -1,7 +1,8 @@
 -- ============================================================
--- KKP YoungGen Portfolio Challenge — Supabase schema (YG-V0)
--- ✅ ตรงกับ DB จริง 100% (เทียบ information_schema กับ market-wars DB — 01 Jul 2026)
--- รันใน Supabase SQL Editor ของ project ใหม่ (deploy จริง) · เดโม local ใช้ DB เดิมได้ ไม่ต้องรัน
+-- KKP Next Gen Portfolio Challenge — Supabase schema (NXG-V0)
+-- Base: YoungGen YG-V0 schema (ตรงกับ DB จริง) + NXG-V0: rooms.phase_started_at (ใช้กับ countdown timer NXG-V3)
+-- รันทั้งไฟล์ใน Supabase SQL Editor ของ project ใหม่ ก่อน deploy Vercel ครั้งแรก
+-- ถ้ารันบน DB YoungGen เดิม (ไม่แนะนำ) ใช้แค่: alter table public.rooms add column if not exists phase_started_at timestamptz default now();
 -- ============================================================
 
 -- ---------- rooms (ห้องเกม) ----------
@@ -10,7 +11,8 @@ create table if not exists public.rooms (
   status        text not null default 'lobby',  -- lobby | playing | finished
   current_round integer not null default 1,
   current_phase text not null default 'lobby',
-  created_at    timestamptz default now()
+  created_at    timestamptz default now(),
+  phase_started_at timestamptz default now()   -- NXG-V0: เวลาที่เข้า phase ปัจจุบัน (phase route stamp ทุกครั้ง) → countdown ทุกจอตรงกัน
 );
 
 -- ---------- players (1 แถว = 1 ทีม) ----------
@@ -18,7 +20,7 @@ create table if not exists public.players (
   id                        uuid primary key default gen_random_uuid(),
   room_id                   text not null references public.rooms(id) on delete cascade,
   name                      text not null,
-  money                     numeric not null default 1000000,   -- YG: ทีมเริ่ม 1,000,000 (โค้ด players route เขียนค่านี้เอง)
+  money                     numeric not null default 10000000,  -- NXG: ทีมเริ่ม 10,000,000 (โค้ด players route เขียน STARTING_MONEY เอง)
   portfolio                 jsonb default '{}'::jsonb,
   portfolio_submitted_round integer default 0,
   round_returns             jsonb default '{}'::jsonb,
