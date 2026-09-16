@@ -1,7 +1,7 @@
 // FILE: app/display/[roomId]/page.tsx — Display screen (shell)
-// VERSION: YG-V6 — pass roomId/joinUrl to YearIntroDisplay (rejoin QR); remove dead final_awards branch
-// LAST MODIFIED: 03 Jul 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V2 fit-to-screen | YG-V4 reveal phase | YG-V6 YearIntro rejoin QR props + final_awards cleanup
+// VERSION: NXG-V1 — branch 'shock' → ShockDisplay (inside header shell, like reveal); EventDisplay phase prop narrowed (golden_deal removed)
+// LAST MODIFIED: 16 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V2 fit-to-screen | YG-V4 reveal phase | YG-V6 YearIntro rejoin QR props + final_awards cleanup | NXG-V1 shock branch
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -24,6 +24,7 @@ import YearIntroDisplay from '@/components/display/YearIntroDisplay';
 import MarketOpenDisplay from '@/components/display/MarketOpenDisplay';
 import InvestDisplay from '@/components/display/InvestDisplay';
 import RevealDisplay from '@/components/display/RevealDisplay';
+import ShockDisplay from '@/components/display/ShockDisplay';
 import ResultsDisplay from '@/components/display/ResultsDisplay';
 import SoundGate from '@/components/display/SoundGate';
 import FitStage from '@/components/display/FitStage';
@@ -282,10 +283,12 @@ export default function DisplayScreen() {
             <RevealDisplay players={players} round={round} />
           )}
 
+          {phase === 'shock' && <ShockDisplay round={round} />}
+
           {phase === 'chance_card' && <ChanceCardDisplay players={players} round={round} />}
 
-          {(phase === 'event' || phase === 'event_result' || phase === 'golden_deal') && (
-            <EventDisplay round={round} phase={phase as 'event' | 'event_result' | 'golden_deal'} players={players} />
+          {(phase === 'event' || phase === 'event_result') && (
+            <EventDisplay round={round} phase={phase as 'event' | 'event_result'} players={players} />
           )}
 
           {phase === 'results' && (

@@ -1,7 +1,7 @@
 // FILE: app/mc/[roomId]/page.tsx — MC Control screen
-// VERSION: YG-V6 — End & New Room button (final) + per-asset % on invest mini-bar; final stepper unchanged
-// LAST MODIFIED: 07 Jul 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V4 reveal button | YG-V5 cut Awards step | YG-V6 End & New Room
+// VERSION: NXG-V1 — reads CHALLENGES/SHOCKS (drops EVENTS/YEAR_INTRO_TEXT): year_intro card = brief + 5 headlines + question; new shock card = 4 bullets + tip; event = revealScript; event_result = 9-asset table + keyLesson/commonTrap/reviewQuestion; Next label before shock marked ⚠️
+// LAST MODIFIED: 16 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V4 reveal button | YG-V5 cut Awards step | YG-V6 End & New Room | NXG-V1 CHALLENGES/SHOCKS cards
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -15,10 +15,10 @@ import {
   TOTAL_ROUNDS,
   COMPANIES,
   MC_TIPS,
-  EVENTS,
+  CHALLENGES,
+  SHOCKS,
   RETURN_TABLE,
   STARTING_MONEY,
-  YEAR_INTRO_TEXT,
   assetTextColor,
 } from '@/lib/constants';
 import { getNextPhase, getStepGroupProgress } from '@/lib/game-engine';
@@ -258,15 +258,33 @@ export default function MCControlRoom() {
 
       {/* Year Intro — MC tip */}
       {phase === 'year_intro' && (() => {
-        const introText = YEAR_INTRO_TEXT[round] || { title: `ปีที่ ${round}`, subtitle: '' };
+        const ch = CHALLENGES[round];
+        if (!ch) return null;
         return (
           <div className="rounded-lg p-3 mb-3" style={{ background: 'rgba(var(--mw-violet-rgb),0.05)', border: '1px solid rgba(var(--mw-violet-rgb),0.15)' }}>
-            <p className="text-sm font-bold text-neon-green mb-1">📅 ปีที่ {round} — {introText.title}</p>
-            <p className="text-xs text-gray-400">{introText.subtitle}</p>
-            <p className="text-xs text-gray-500 mt-2">เด็กๆ เห็น &quot;ปีที่ {round}&quot; บนจอใหญ่ — พูดแนะนำว่าปีนี้จะทำอะไรบ้าง แล้วกด Next</p>
+            <p className="text-sm font-bold text-neon-green mb-1">{ch.emoji} Challenge {round} · {ch.year} — {ch.title}</p>
+            <p className="text-xs text-gray-300 mb-2">{ch.storyBrief}</p>
+            <p className="text-[11px] text-gray-500 mb-1">📰 ข่าว 5 ชิ้น (ตัวเต็มบน Handout)</p>
+            <ol className="text-xs text-gray-400 space-y-0.5 mb-2 list-none">
+              {ch.headlines.map((h, i) => <li key={i}><span style={{ color: 'var(--mw-violet)' }}>{i + 1}.</span> {h}</li>)}
+            </ol>
+            <p className="text-xs text-white">❓ {ch.question}</p>
+            <p className="text-xs text-gray-500 mt-2">อ่าน Story Brief · ชี้ให้ทีมอ่านข่าวตัวเต็มใน Handout · ทวนคำถาม แล้วกด Next เข้าจัดพอร์ต</p>
           </div>
         );
       })()}
+
+      {/* NXG-V1: Mid-Year Shock — MC reads bullets, no portfolio change */}
+      {phase === 'shock' && SHOCKS[round] && (
+        <div className="rounded-lg p-3 mb-3" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)' }}>
+          <p className="text-sm font-bold mb-2" style={{ color: '#F87171' }}>⚠️ {SHOCKS[round].title}</p>
+          <ul className="text-xs text-gray-300 space-y-1 mb-2 list-disc pl-4">
+            {SHOCKS[round].bullets.map((b, i) => <li key={i}>{b}</li>)}
+          </ul>
+          <p className="text-xs" style={{ color: '#FBBF24' }}>{SHOCKS[round].footer}</p>
+          <p className="text-xs text-gray-500 mt-2">{PHASE_DISPLAY.shock?.mcTip}</p>
+        </div>
+      )}
 
       {/* Market Open — MC tip */}
       {phase === 'market_open' && (
@@ -411,18 +429,22 @@ export default function MCControlRoom() {
       )}
 
       {/* === Event info for MC === */}
-      {phase === 'event' && EVENTS[round - 1] && (
+      {phase === 'event' && CHALLENGES[round] && (
         <div className="bg-[var(--mw-surface)] rounded-lg p-3 mb-3 border border-[#FF6B6B]/30">
-          <p className="text-[#FF6B6B] text-sm font-bold">{EVENTS[round - 1].emoji} {EVENTS[round - 1].title}</p>
-          <p className="text-gray-400 text-xs mt-1">{EVENTS[round - 1].description}</p>
+          <p className="text-[#FF6B6B] text-sm font-bold">{CHALLENGES[round].emoji} {CHALLENGES[round].year} · {CHALLENGES[round].title}</p>
+          <p className="text-gray-300 text-xs mt-1">{CHALLENGES[round].revealScript}</p>
+          <p className="text-gray-500 text-xs mt-2">อ่านบทเฉลยตามจอ แล้วกด Next ดูผลตอบแทนรายสินทรัพย์</p>
         </div>
       )}
 
       {/* === Event Result return table === */}
-      {phase === 'event_result' && EVENTS[round - 1] && (
+      {phase === 'event_result' && CHALLENGES[round] && (
         <div className="bg-[var(--mw-surface)] rounded-lg p-3 mb-3 border border-neon-cyan/30">
-          <p className="text-neon-cyan text-sm font-bold mb-2">📊 Market Impact — Round {round}</p>
-          <div className="grid grid-cols-2 gap-1">{COMPANIES.map((c) => { const returnPct = RETURN_TABLE[c.id]?.[round - 1] || 0; return (<div key={c.id} className="flex justify-between text-xs py-0.5"><span style={{ color: c.color }}>{c.name}</span><span style={{ color: returnPct >= 0 ? '#22c55e' : '#ef4444' }}>{returnPct > 0 ? '+' : ''}{returnPct}%</span></div>); })}</div>
+          <p className="text-neon-cyan text-sm font-bold mb-2">📊 ผลตอบแทนปี {CHALLENGES[round].year} — Challenge {round}</p>
+          <div className="grid grid-cols-2 gap-1 mb-2">{COMPANIES.map((c) => { const returnPct = RETURN_TABLE[c.id]?.[round - 1] || 0; return (<div key={c.id} className="flex justify-between text-xs py-0.5"><span style={{ color: c.color }}>{c.name}</span><span className="font-mono" style={{ color: returnPct >= 0 ? '#22c55e' : '#ef4444' }}>{returnPct > 0 ? '+' : ''}{returnPct}%</span></div>); })}</div>
+          <p className="text-xs text-gray-300"><span className="text-neon-green">💡 Key Lesson:</span> {CHALLENGES[round].keyLesson}</p>
+          <p className="text-xs text-gray-300 mt-1"><span style={{ color: '#F87171' }}>🪤 Common Trap:</span> {CHALLENGES[round].commonTrap}</p>
+          <p className="text-xs text-gray-300 mt-1"><span style={{ color: 'var(--mw-rose)' }}>❓ ชวนคุย:</span> {CHALLENGES[round].reviewQuestion}</p>
         </div>
       )}
 
@@ -494,6 +516,8 @@ export default function MCControlRoom() {
             nextLabel = isLastRound ? 'Next → Final Summary 🏆' : `Next → Challenge ${round + 1}`;
           } else if (phase === 'invest') {
             nextLabel = '🔓 Reveal Allocations';
+          } else if (phase === 'reveal' && getNextPhase(phase, round)?.phase === 'shock') {
+            nextLabel = 'Next → ⚠️ Mid-Year Shock';
           } else {
             const next = getNextPhase(phase, round);
             const nextName = next ? (PHASE_DISPLAY[next.phase]?.name || next.phase) : 'End';

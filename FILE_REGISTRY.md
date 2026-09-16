@@ -1,10 +1,10 @@
 # KKP Next Gen Portfolio Challenge — File Registry
 
 **Location:** วางที่ root ของ repo (`/FILE_REGISTRY.md`) — version control โดย git
-**Last Updated:** NXG-V0 (fork + config: 9 assets · 5 challenges · ฿10M · shock phase · Next Gen brand) — 10 Sep 2026
+**Last Updated:** NXG-V1 (new screens: YearIntro story+news · ShockDisplay · EventDisplay 3×3 · LockedPortfolio · display/play/mc branches) — 16 Sep 2026
 **Repo:** https://github.com/marketwars-game/nextgen-portfolio-challenge
 **Default branch:** `main`
-**Latest tag:** (none yet — tag `NXG-V0` after V0 passes build + 5-round smoke test) · carried tags `YG-V0`..`YG-V6.3`
+**Latest tag:** `NXG-V0` (14 Sep) · tag `NXG-V1` after Vercel smoke test · carried tags `YG-V0`..`YG-V6.3`
 **Event:** พฤ 17 ก.ย. 2569 · 90 นาที · 6 ทีม × 10 คน · freeze tag `NXG-V5-stable` วันพุธ 16 ก.ย.
 **Content source:** KKP Next Gen Portfolio Challenge — Thai Facilitator Guide v1.14 (project knowledge, ไม่อยู่ใน repo)
 
@@ -12,7 +12,7 @@
 
 **NXG batch plan (ทีละ batch → build ผ่าน → full-overwrite → push):**
 - **V0** ✅ fork + config (ไฟล์ตามตารางด้านล่าง)
-- **V1** จอใหม่ — YearIntroDisplay (Story + 5 headlines + question) · ShockDisplay 🆕 · EventDisplay 3×3 + Reveal Script/Key Lesson · display/play/mc branches
+- **V1** ✅ จอใหม่ — YearIntroDisplay (Story + 5 headlines + question) · ShockDisplay 🆕 · EventDisplay 3×3 + Reveal Script/Key Lesson · LockedPortfolio 🆕 (มือถือ reveal/shock) · display/play/mc branches · งานเอกสารปิด V0 (README/RUNBOOK/archive YG docs/package.json) ย้ายไป V5
 - **V2** Player — `lib/risk.ts` 🆕 (σ preview, corr 0.20) · InvestmentPanel (ชื่อไทย + vol + ตัวนับกติกา)
 - **V3** Timer — `hooks/usePhaseTimer.ts` 🆕 · `components/common/CountdownTimer.tsx` 🆕 · InvestDisplay + InvestmentPanel header (อ่าน `rooms.phase_started_at`)
 - **V3.5** MC Transfer Tool — `app/api/players/transfer/route.ts` 🆕 · `components/mc/TransferMC.tsx` 🆕 · `components/display/TransferOverlay.tsx` 🆕 (mini-game money moves; affects Highest Ending Value only)
@@ -46,6 +46,20 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 ```
 
 ---
+
+## 🔧 ไฟล์ที่แก้ใน NXG-V1 (6 แก้ + 2 ใหม่) — 16 Sep 2026
+| ไฟล์ | แก้อะไร |
+|------|---------|
+| `components/display/YearIntroDisplay.tsx` | อ่าน `CHALLENGES` ตรง · layout ใหม่: eyebrow CHALLENGE n/ปี · title · storyBrief · 📰 5 headlines (1 บรรทัด ellipsis) · ❓ question ปิดจอ · ตัดเลข 160px + STEP_GROUPS pills · คง rejoin QR (ไม่มีข้อความ bit.ly — รอ V4) |
+| `components/display/ShockDisplay.tsx` 🆕 | `SHOCKS[round]` — ป้าย MID-YEAR SHOCK · title · 4 bullets stagger 0.6s · footer เหลือง · แสดงใน header shell เหมือน reveal |
+| `components/display/EventDisplay.tsx` | อ่าน `CHALLENGES` ตรง · `event` = emoji + ปี·title + revealScript · `event_result` = news bar (title + keyLesson) + การ์ดแนวนอน 9 ใบ grid 3×3 (พอดี 720px — ทดสอบ mockup แล้ว) · ตัด `golden_deal` |
+| `components/player/LockedPortfolio.tsx` 🆕 | มือถือ reveal/shock — banner (violet/แดง) + PortfolioBar + รายการ % และ ฿ จาก `players.portfolio` (realtime channel `player-me` ส่ง row เต็มอยู่แล้ว) |
+| `app/display/[roomId]/page.tsx` | import + branch `shock` → ShockDisplay · EventDisplay prop ไม่มี golden_deal |
+| `app/play/[roomId]/page.tsx` | `year_intro` อ่าน CHALLENGES (emoji ปี title + question) · branch `reveal`/`shock` → LockedPortfolio · เอาสอง phase ออกจาก generic block |
+| `app/mc/[roomId]/page.tsx` | การ์ด `year_intro` (brief + 5 ข่าว + คำถาม) · การ์ด `shock` 🆕 (bullets + footer + mcTip) · `event` = revealScript · `event_result` = ตาราง 9 + keyLesson/commonTrap/reviewQuestion · ปุ่ม reveal→shock = "Next → ⚠️ Mid-Year Shock" |
+| `lib/constants.ts` | ลบ derived views `YEAR_INTRO_TEXT` / `EVENTS` (ไม่มีผู้ใช้แล้ว) · content ไม่เปลี่ยน |
+
+**V1 smoke test (บน Vercel):** Ch1 year_intro เห็นข่าว 5 ข้อไม่ล้น · Ch2 reveal → ปุ่ม ⚠️ → จอ Shock bullets ขึ้นทีละข้อ · มือถือ reveal/shock เห็นพอร์ตที่ Lock พร้อม banner · event_result การ์ด 9 ใบอยู่ใน 720px ทั้ง 5 รอบ · MC เห็นการ์ดใหม่ทุก phase
 
 ## 🔧 ไฟล์ที่แก้ใน NXG-V0 (fork จาก YG-V6.3 — 9 ไฟล์)
 | ไฟล์ | แก้อะไร |

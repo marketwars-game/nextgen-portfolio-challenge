@@ -1,7 +1,7 @@
 // FILE: app/play/[roomId]/page.tsx — Player game screen
-// VERSION: YG-V6 — player EN sweep (header/lobby/year_intro list→YG steps/market_open) + challenge wording
-// LAST MODIFIED: 03 Jul 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V5 phase→FinalView | YG-V6 player EN
+// VERSION: NXG-V1 — year_intro reads CHALLENGES (title + question); branches 'reveal' + 'shock' → LockedPortfolio (from players.portfolio); both removed from generic phase-info block
+// LAST MODIFIED: 16 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V5 phase→FinalView | YG-V6 player EN | NXG-V1 CHALLENGES + LockedPortfolio
 'use client';
 
 import { useEffect, useState, useRef, Suspense } from 'react';
@@ -15,7 +15,7 @@ import {
   TOTAL_ROUNDS,
   COMPANIES,
   STARTING_MONEY,
-  YEAR_INTRO_TEXT,
+  CHALLENGES,
   getQuizForRound,
 } from '@/lib/constants';
 import { getStepGroupProgress } from '@/lib/game-engine';
@@ -25,6 +25,7 @@ import ResearchQuiz from '@/components/player/ResearchQuiz';
 import LeaderboardView from '@/components/player/LeaderboardView';
 import FinalView from '@/components/player/FinalView';
 import ChanceCard from '@/components/player/ChanceCard';
+import LockedPortfolio from '@/components/player/LockedPortfolio';
 
 function PlayerContent() {
   const params = useParams();
@@ -328,13 +329,13 @@ function PlayerContent() {
 
       {/* ✅ B13: Year Intro — ปรับขั้นตอน: เป่ายิงฉุบ → เปิดการ์ดโชคชะตา */}
       {phase === 'year_intro' && (() => {
-        const introText = YEAR_INTRO_TEXT[round] || { title: `Challenge ${round}`, subtitle: 'Get ready — rebalance your portfolio.' };
+        const ch = CHALLENGES[round];
         return (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <p className="text-xs tracking-[4px] text-neon-cyan font-medium mb-1">C H A L L E N G E</p>
             <p className="text-6xl font-black text-neon-green leading-none mb-3">{round}</p>
-            <p className="text-base text-white font-medium mb-1">{introText.title}</p>
-            <p className="text-sm text-gray-400 mb-5">{introText.subtitle}</p>
+            <p className="text-base text-white font-medium mb-1">{ch ? `${ch.emoji} ${ch.year} · ${ch.title}` : `Challenge ${round}`}</p>
+            <p className="text-sm text-gray-400 mb-5 px-2">{ch ? `❓ ${ch.question}` : ''}</p>
 
             <p className="text-[10px] text-gray-500 tracking-[2px] mb-3">THIS CHALLENGE</p>
             <div className="flex flex-col gap-2 w-full max-w-[220px]">
@@ -369,8 +370,13 @@ function PlayerContent() {
         </div>
       )}
 
+      {/* NXG-V1: reveal + shock — locked portfolio with banner (reads players.portfolio) */}
+      {(phase === 'reveal' || phase === 'shock') && (
+        <LockedPortfolio variant={phase as 'reveal' | 'shock'} round={round} portfolio={(player.portfolio || {}) as Record<string, number>} money={parseFloat(player.money) || 0} />
+      )}
+
       {/* Phase info — only for phases without custom UI */}
-      {!isFinal && !['invest', 'research', 'research_reveal', 'chance_card', 'year_intro', 'market_open', 'lobby'].includes(phase) && (
+      {!isFinal && !['invest', 'research', 'research_reveal', 'chance_card', 'year_intro', 'market_open', 'lobby', 'reveal', 'shock'].includes(phase) && (
         <div className="text-center py-4">
           <div className="text-3xl mb-1">{phaseInfo.icon}</div>
           <h2 className="text-xl font-bold text-neon-green">{phaseInfo.name}</h2>

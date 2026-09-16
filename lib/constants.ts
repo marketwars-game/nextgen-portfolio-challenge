@@ -1,14 +1,14 @@
 // FILE: lib/constants.ts — Game Configuration (Single Source of Truth)
-// VERSION: NXG-V0 — KKP Next Gen Portfolio Challenge (fork of YoungGen YG-V6.3)
+// VERSION: NXG-V1 — derived views (YEAR_INTRO_TEXT / EVENTS) removed; content unchanged from NXG-V0
 //   • 8 asset classes (EN) → 9 asset classes (TH, per Facilitator Guide v1.14 §2.2) + per-asset `vol`
 //   • RETURN_TABLE 8x7 → 9x5 (Guide Appendix B1)
 //   • STARTING_MONEY 1,000,000 → 10,000,000 · TOTAL_ROUNDS 7 → 5 · MAX_PLAYERS 60 → 6 (teams)
 //   • Diversification rules now apply EVERY round: MIN_ASSET_CLASSES 3 → 4, MAX_ALLOCATION_PER_ASSET 50 → 40, DIVERSIFY_FROM_ROUND 5 → 1
 //   • Progressive unlock removed — all 9 assets selectable every challenge (AVAILABLE_ASSETS kept, now ALL_9 each round)
 //   • NEW: CHALLENGES (story brief + question + 5 headlines + reveal script + key lesson), SHOCK_ROUNDS/SHOCKS (Mid-Year Shock), VOL_CORRELATION, PHASE_TIMERS.invest=270
-//   • YEAR_INTRO_TEXT / EVENTS kept as derived views of CHALLENGES so V0 renders with untouched YG components (rewritten in NXG-V1)
-// LAST MODIFIED: 10 Sep 2026
-// HISTORY: market-wars B1..B20 | YoungGen YG-V0..V6.3 (see youngen-portfolio-challenge) | NXG-V0 fork: 9 assets · 5 challenges · ฿10M · rules every round · shock phase · Thai content
+//   • NXG-V1: YEAR_INTRO_TEXT / EVENTS derived views removed — all screens read CHALLENGES / SHOCKS directly
+// LAST MODIFIED: 16 Sep 2026
+// HISTORY: market-wars B1..B20 | YoungGen YG-V0..V6.3 (see youngen-portfolio-challenge) | NXG-V0 fork: 9 assets · 5 challenges · ฿10M · rules every round · shock phase · Thai content | NXG-V1 drop derived views
 
 // ==============================================
 // KKP Next Gen 2026 — Portfolio Challenge
@@ -473,26 +473,6 @@ export const SHOCKS: Record<number, { title: string; bullets: string[]; footer: 
     footer: 'ทุกทีมคงน้ำหนักที่ Lock ไว้ — ผลตอบแทนทั้งปีที่จะเปิดต่อไปได้รวมเหตุการณ์นี้แล้ว',
   },
 };
-
-// ==============================================
-// Derived views — keep YG-V6.3 components compiling untouched in NXG-V0
-//   YEAR_INTRO_TEXT → YearIntroDisplay / play page / MC page   (rewritten to use CHALLENGES in NXG-V1)
-//   EVENTS          → EventDisplay / MC page                    (rewritten to use CHALLENGES in NXG-V1)
-// ==============================================
-export const YEAR_INTRO_TEXT: Record<number, { title: string; subtitle: string }> = Object.fromEntries(
-  Object.values(CHALLENGES).map((c) => [
-    c.round,
-    { title: `Challenge ${c.round} · ${c.year} · ${c.title}`, subtitle: c.question },
-  ]),
-) as Record<number, { title: string; subtitle: string }>;
-
-export const EVENTS = Object.values(CHALLENGES).map((c) => ({
-  round: c.round,
-  title: `${c.year} · ${c.title}`,
-  emoji: c.emoji,
-  description: c.revealScript,
-  image: null as string | null,
-}));
 
 // --- MC Tips per challenge (Thai; facilitator-only) ---
 export const MC_TIPS: Record<number, string> = {
