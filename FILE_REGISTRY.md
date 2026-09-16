@@ -1,10 +1,10 @@
 # KKP Next Gen Portfolio Challenge — File Registry
 
 **Location:** วางที่ root ของ repo (`/FILE_REGISTRY.md`) — version control โดย git
-**Last Updated:** NXG-V1 (new screens: YearIntro story+news · ShockDisplay · EventDisplay 3×3 · LockedPortfolio · display/play/mc branches) — 16 Sep 2026
+**Last Updated:** NXG-V2 (player invest: lib/risk.ts σ preview · InvestmentPanel Thai + rule chips) — 16 Sep 2026
 **Repo:** https://github.com/marketwars-game/nextgen-portfolio-challenge
 **Default branch:** `main`
-**Latest tag:** `NXG-V0` (14 Sep) · tag `NXG-V1` after Vercel smoke test · carried tags `YG-V0`..`YG-V6.3`
+**Latest tag:** `NXG-V1` (16 Sep) · tag `NXG-V2` after Vercel smoke test · carried tags `YG-V0`..`YG-V6.3`
 **Event:** พฤ 17 ก.ย. 2569 · 90 นาที · 6 ทีม × 10 คน · freeze tag `NXG-V5-stable` วันพุธ 16 ก.ย.
 **Content source:** KKP Next Gen Portfolio Challenge — Thai Facilitator Guide v1.14 (project knowledge, ไม่อยู่ใน repo)
 
@@ -13,7 +13,7 @@
 **NXG batch plan (ทีละ batch → build ผ่าน → full-overwrite → push):**
 - **V0** ✅ fork + config (ไฟล์ตามตารางด้านล่าง)
 - **V1** ✅ จอใหม่ — YearIntroDisplay (Story + 5 headlines + question) · ShockDisplay 🆕 · EventDisplay 3×3 + Reveal Script/Key Lesson · LockedPortfolio 🆕 (มือถือ reveal/shock) · display/play/mc branches · งานเอกสารปิด V0 (README/RUNBOOK/archive YG docs/package.json) ย้ายไป V5
-- **V2** Player — `lib/risk.ts` 🆕 (σ preview, corr 0.20) · InvestmentPanel (ชื่อไทย + vol + ตัวนับกติกา)
+- **V2** ✅ Player — `lib/risk.ts` 🆕 (σ preview, corr 0.20) · InvestmentPanel (ชื่อไทย + vol + σ + ชิปกติกา + Lock ไทย) — ตาม NXG-DESIGN-V2-Mockup
 - **V3** Timer — `hooks/usePhaseTimer.ts` 🆕 · `components/common/CountdownTimer.tsx` 🆕 · InvestDisplay + InvestmentPanel header (อ่าน `rooms.phase_started_at`)
 - **V3.5** MC Transfer Tool — `app/api/players/transfer/route.ts` 🆕 · `components/mc/TransferMC.tsx` 🆕 · `components/display/TransferOverlay.tsx` 🆕 (mini-game money moves; affects Highest Ending Value only)
 - **V4** Thai sweep หน้าผู้เล่น · **V5** dry-run fixes + `docs/NXG_TechSpec_v1.md` + tag stable
@@ -44,6 +44,14 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 ```
 https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/<path>
 ```
+
+---
+
+## 🔧 ไฟล์ที่แก้ใน NXG-V2 (1 แก้ + 1 ใหม่) — 16 Sep 2026
+| ไฟล์ | แก้อะไร |
+|------|---------|
+| `lib/risk.ts` 🆕 | `portfolioVol(weights)` σ_p % ตาม Guide §3.2 `√[(1−ρ)Σ(wᵢσᵢ)² + ρ(Σwᵢσᵢ)²]` ρ=`VOL_CORRELATION` · `formatVol()` "5.9"/"—" · ตรวจ Guide B4 = 5.905 · §3.1 = 8.04 · preview เท่านั้น ไม่ใช้คิดผล/อันดับ |
+| `components/player/InvestmentPanel.tsx` | rewrite ไทย: pill `CHALLENGE n · ปี` จาก `CHALLENGES` · summary = ฿ + สถานะ + bar + แถว σ สด + ชิป `n/4 รายการ` / `สูงสุด 40%` (idle/warn/ok) · แถว asset = ชื่อไทย + `nameEn · σ vol%` + MAX ที่ 40 + ฿ ใต้ชื่อ (ลบ RiskBadge + mini-bar) · `+` จางเมื่อรวม 100 · ปุ่ม Lock บอกข้อที่ยังไม่ผ่าน · submitted state ไทย + σ · validation/adjust/API เดิม · `isRebalance` คงเป็น optional-ignored (ถอดตอน V3 พร้อม page.tsx) |
 
 ---
 
@@ -141,6 +149,7 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 
 | ไฟล์ | หน้าที่ | Raw URL |
 |------|--------|---------|
+| risk | 🆕 NXG-V2 — `portfolioVol` / `formatVol` (σ preview, Guide §3.2) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/risk.ts |
 | constants | 🔧 NXG-V0 — rewritten: 9 assets · 5 challenges · CHALLENGES/SHOCKS · rules every round | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/constants.ts |
 | game-engine | 🔧 NXG-V0 — shock phase on SHOCK_ROUNDS · (YG-V4 reveal · YG-V0 pure allocation loop) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/game-engine.ts |
 | supabase | Supabase client | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/supabase.ts |
@@ -155,7 +164,7 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 
 | ไฟล์ | หน้าที่ | Raw URL |
 |------|--------|---------|
-| InvestmentPanel | 🔧 YG-V3 — Edit button removed (submit final) · crypto cap auto-cleared · (YG-V0: allocation 8 asset + unlock + 100% gate) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/player/InvestmentPanel.tsx |
+| InvestmentPanel | 🔧 NXG-V2 — Thai UI · σ preview · rule chips · Lock copy · (YG-V3 Edit removed · YG-V6.3 rules · YG-V0 allocation + 100% gate) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/player/InvestmentPanel.tsx |
 | ResultsPanel | ผลรอบ (มือถือ) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/player/ResultsPanel.tsx |
 | LeaderboardView | อันดับ + ตัวเอง | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/player/LeaderboardView.tsx |
 | FinalView | สรุปจบเกม (มือถือ) — 🔧 YG-V5 spoiler guard + ตัด award badge | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/player/FinalView.tsx |
