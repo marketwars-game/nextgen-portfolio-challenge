@@ -1,9 +1,10 @@
 // FILE: components/mc/FinalMC.tsx — MC Final Phase
-// VERSION: YG-V5 — align MC script to 2-step final (① Podium → ② Ranking); drop SPECIAL AWARDS box (Awards step cut)
-// LAST MODIFIED: 03 Jul 2026
-// HISTORY: market-wars B1..B20 (kids-camp lineage — see market-wars repo) | YG-V0 fork | YG-V1 re-theme | YG-V5 script + drop awards box
+// VERSION: NXG-V3 — script 3-step (+ ③ Risk-Adjusted) · RISK-ADJUSTED list (lib/riskScore) under the money leaderboard so MC can read Score/σ/Below Cash aloud
+// LAST MODIFIED: 17 Sep 2026
+// HISTORY: market-wars B1..B20 (kids-camp lineage — see market-wars repo) | YG-V0 fork | YG-V1 re-theme | YG-V5 script + drop awards box | NXG-V3 risk-adjusted
 
 import { STARTING_MONEY } from '@/lib/constants';
+import { computeRiskScores, cashCagr, fmtPct2, fmtScore } from '@/lib/riskScore';
 
 interface FinalMCProps {
   players: any[];
@@ -31,6 +32,10 @@ export default function FinalMC({ players }: FinalMCProps) {
     (p) => (parseFloat(p.money) || 0) < STARTING_MONEY
   ).length;
 
+  // NXG-V3: risk-adjusted standings (same formula as Score Sheet)
+  const riskRows = computeRiskScores(players);
+  const rCash = cashCagr();
+
   // Biggest winner
   const biggestWinner = sorted[0];
   const bigWinPct = biggestWinner
@@ -44,8 +49,9 @@ export default function FinalMC({ players }: FinalMCProps) {
         <p className="text-[#FCD34D] text-sm font-bold mb-2">🎤 Script ปิดเกม (คุมจังหวะด้วยปุ่ม Step ด้านบน)</p>
         <div className="text-gray-400 text-xs space-y-2">
           <p>① <b>Podium</b> — ปั่นบรรยากาศ &quot;ใครคือแชมป์?&quot; แล้วกด <b>เฉลยแชมป์</b> → ประกาศ Top 3 (จอไล่ #3→#2→#1)</p>
-          <p>② <b>Ranking</b> — เปิดอันดับทุกทีม เผื่อให้น้องๆ มาถ่ายรูปร่วมกัน 📸</p>
-          <p>③ สรุปบทเรียนการลงทุน (ดูด้านล่าง) — เน้น <b style={{ color: '#34d399' }}>&quot;กระจายความเสี่ยง 🧺 = ไม่ทุ่มไข่ตะกร้าเดียว&quot;</b></p>
+          <p>② <b>Ranking</b> — เปิดอันดับทุกทีมตามมูลค่าพอร์ต (Highest Ending Value) 📸</p>
+          <p>③ <b>Risk-Adj</b> — เปิดอันดับ Return/Risk: ชี้ทีมที่ขยับขึ้น (▲) เพราะรับความเสี่ยงต่ำแต่ยังชนะเงินสด · ทีม <b style={{ color: '#ef4444' }}>BELOW CASH</b> = ผลตอบแทนแพ้ถือเงินสด · Score นี้สูตรเดียวกับ Score Sheet</p>
+          <p>④ สรุปบทเรียนการลงทุน (ดูด้านล่าง) — เน้น <b style={{ color: '#34d399' }}>&quot;กระจายความเสี่ยง 🧺 = ไม่ทุ่มไข่ตะกร้าเดียว&quot;</b></p>
         </div>
       </div>
 
@@ -123,6 +129,35 @@ export default function FinalMC({ players }: FinalMCProps) {
                   >
                     {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
                   </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* NXG-V3: Risk-adjusted standings — what step ③ shows on the projector */}
+      <div className="bg-[var(--mw-surface)] rounded-lg p-3">
+        <div className="flex justify-between items-baseline mb-2">
+          <div className="text-xs tracking-widest text-gray-500">⚖️ RISK-ADJUSTED (Score Sheet formula)</div>
+          <div className="text-[11px] text-gray-500">เงินสด CAGR {fmtPct2(rCash)}</div>
+        </div>
+        <div className="space-y-1 max-h-64 overflow-y-auto">
+          {riskRows.map((r, i) => {
+            const medals = ['🥇', '🥈', '🥉'];
+            const top = i < 3 && r.complete && !r.belowCash;
+            return (
+              <div key={r.id} className="flex justify-between items-center px-2 py-1 border-b border-gray-800/50 last:border-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm w-6 text-center">{top ? medals[i] : `${i + 1}`}</span>
+                  <span className="text-sm truncate" style={{ color: top ? ['#FCD34D', '#D1D5DB', '#FBBF24'][i] : r.belowCash ? '#f87171' : '#9CA3AF', fontWeight: top ? 700 : 400 }}>{r.name}</span>
+                  {r.complete && r.moneyRank !== i + 1 && (
+                    <span className="text-[10px]" style={{ color: r.moneyRank > i + 1 ? '#22c55e' : '#ef4444' }}>{r.moneyRank > i + 1 ? '▲' : '▼'} จาก #{r.moneyRank}</span>
+                  )}
+                </div>
+                <div className="text-right whitespace-nowrap">
+                  <span className="text-[11px] text-gray-500 mr-2">CAGR {fmtPct2(r.cagr)} · σ {r.complete ? r.sigma.toFixed(2) + '%' : '—'}</span>
+                  <span className="text-sm font-bold" style={{ color: !r.complete ? '#6b7280' : r.belowCash ? '#ef4444' : '#22c55e' }}>{!r.complete ? '—' : r.belowCash ? 'BELOW CASH' : fmtScore(r.score)}</span>
                 </div>
               </div>
             );

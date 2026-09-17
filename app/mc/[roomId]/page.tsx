@@ -1,7 +1,7 @@
 // FILE: app/mc/[roomId]/page.tsx — MC Control screen
-// VERSION: NXG-V1 — reads CHALLENGES/SHOCKS (drops EVENTS/YEAR_INTRO_TEXT): year_intro card = brief + 5 headlines + question; new shock card = 4 bullets + tip; event = revealScript; event_result = 9-asset table + keyLesson/commonTrap/reviewQuestion; Next label before shock marked ⚠️
-// LAST MODIFIED: 16 Sep 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V4 reveal button | YG-V5 cut Awards step | YG-V6 End & New Room | NXG-V1 CHALLENGES/SHOCKS cards
+// VERSION: NXG-V3 — Final step nav: + ③ Risk-Adjusted (final_riskadj) after ② Ranking
+// LAST MODIFIED: 17 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V4 reveal button | YG-V5 cut Awards step | YG-V6 End & New Room | NXG-V1 CHALLENGES/SHOCKS cards | NXG-V3 final_riskadj step
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -174,7 +174,7 @@ export default function MCControlRoom() {
   if (!room) return <div className="min-h-screen bg-base flex items-center justify-center"><div className="text-red-400 text-xl">Room not found</div></div>;
 
   const phase = room.current_phase || 'lobby';
-  const isFinal = phase.startsWith('final'); // YG-V5: final / final_podium / final_ranking (Awards step cut)
+  const isFinal = phase.startsWith('final'); // final / final_podium / final_ranking / final_riskadj (NXG-V3)
   const round = room.current_round || 1;
   const phaseInfo = PHASE_DISPLAY[phase] || PHASE_DISPLAY.lobby;
   const timerDuration = PHASE_TIMERS[phase] || 0;
@@ -456,11 +456,12 @@ export default function MCControlRoom() {
 
       {/* === B16d: Final step controls === */}
       {isFinal && (() => {
-        const order = ['final', 'final_podium', 'final_ranking'];
+        const order = ['final', 'final_podium', 'final_ranking', 'final_riskadj']; // NXG-V3
         const idx = order.indexOf(phase);
         const stepBtns = [
           { key: 'final_podium', label: '① Podium' },
           { key: 'final_ranking', label: '② Ranking' },
+          { key: 'final_riskadj', label: '③ Risk-Adj' },
         ];
         return (
           <div className="bg-[var(--mw-surface)] rounded-lg p-3 mb-3 border border-neon-green/30">

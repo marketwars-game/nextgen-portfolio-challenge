@@ -1,28 +1,18 @@
-// FILE: components/display/YearIntroDisplay.tsx — Display challenge brief: Story Brief + 5 news headlines + question (+ rejoin QR)
-// VERSION: NXG-V1 — reads CHALLENGES directly (drops YEAR_INTRO_TEXT); layout per NXG-DESIGN-V1-Mockup screen 1; 160px number + STEP_GROUPS pills removed
-// LAST MODIFIED: 16 Sep 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V2 fit-to-screen | YG-V6 challenge wording + corner rejoin QR | NXG-V1 story + headlines + question
+// FILE: components/display/YearIntroDisplay.tsx — Display challenge brief: Story Brief + 5 news headlines + question
+// VERSION: NXG-V3 — rejoin QR corner card removed (QR lives on LobbyDisplay only); props narrowed to { round }
+// LAST MODIFIED: 17 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V2 fit-to-screen | YG-V6 challenge wording + corner rejoin QR | NXG-V1 story + headlines + question | NXG-V3 drop QR
 'use client';
 
-import { QRCodeSVG } from 'qrcode.react';
 import { CHALLENGES } from '@/lib/constants';
 import AnimatedBackdrop from '@/components/display/AnimatedBackdrop';
 
-export default function YearIntroDisplay({ round, roomId, joinUrl }: { round: number; roomId?: string; joinUrl?: string }) {
+export default function YearIntroDisplay({ round }: { round: number }) {
   const ch = CHALLENGES[round];
 
   return (
     <div className="w-full h-full bg-base text-white relative overflow-hidden">
       <AnimatedBackdrop accent="var(--mw-violet)" accent2="var(--mw-rose)" />
-
-      {/* Rejoin QR — corner card (kept from YG-V6; short-link text decided in NXG-V4) */}
-      {roomId && joinUrl && (
-        <div className="absolute z-20 flex flex-col items-center gap-[8px]" style={{ top: 34, right: 34, width: 190, padding: '14px 14px', borderRadius: 16, background: 'rgba(var(--mw-surface-rgb),0.72)', backdropFilter: 'blur(8px)', border: '1px solid var(--mw-border)', boxShadow: '0 12px 40px rgba(0,0,0,0.45)' }}>
-          <span style={{ fontSize: 12, letterSpacing: 2, fontWeight: 700, color: 'var(--mw-rose)' }}>REJOIN YOUR TEAM</span>
-          <div className="bg-white" style={{ borderRadius: 10, padding: 9 }}><QRCodeSVG value={joinUrl} size={120} /></div>
-          <span className="font-mono" style={{ fontSize: 24, fontWeight: 700, letterSpacing: 6, color: 'var(--mw-rose)' }}>{roomId}</span>
-        </div>
-      )}
 
       {!ch ? (
         <div className="w-full h-full flex items-center justify-center">

@@ -1,14 +1,15 @@
 // FILE: components/display/FinalDisplay.tsx — Display Final Phase ROUTER (3 steps)
-// VERSION: YG-V6 — EN suspense screen (champion reveal); router unchanged (final → final_podium → final_ranking)
-// LAST MODIFIED: 03 Jul 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V5 cut Awards step | YG-V6 EN
+// VERSION: NXG-V3 — 4-step router: final → final_podium → final_ranking → final_riskadj (Risk-Adjusted Standings)
+// LAST MODIFIED: 17 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V5 cut Awards step | YG-V6 EN | NXG-V3 + final_riskadj
 'use client';
 
 import type { SfxKey } from '@/lib/sound';
 import FinalPodium from '@/components/display/FinalPodium';
 import FinalRanking from '@/components/display/FinalRanking';
+import FinalRiskAdjusted from '@/components/display/FinalRiskAdjusted';
 
-export type FinalPhase = 'final' | 'final_podium' | 'final_ranking';
+export type FinalPhase = 'final' | 'final_podium' | 'final_ranking' | 'final_riskadj';
 
 interface FinalDisplayProps {
   players: any[];
@@ -43,5 +44,6 @@ export default function FinalDisplay({ players, phase, animate, playSfx }: Final
   // key={phase} → remount per step so entrance animation runs fresh; settled handled via `animate`
   if (phase === 'final_podium') return <FinalPodium key="podium" players={players} animate={animate} playSfx={playSfx} />;
   if (phase === 'final_ranking') return <FinalRanking key="ranking" players={players} animate={animate} />;
+  if (phase === 'final_riskadj') return <FinalRiskAdjusted key="riskadj" players={players} animate={animate} />; // NXG-V3
   return <FinalSuspense />;
 }

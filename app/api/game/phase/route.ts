@@ -1,7 +1,7 @@
 // FILE: app/api/game/phase/route.ts
-// VERSION: NXG-V0 — stamp rooms.phase_started_at on every phase change (start / next / end / set) → drives the NXG-V3 countdown on all screens
-// LAST MODIFIED: 10 Sep 2026
-// HISTORY: B3 created | B5 auto-calculate + event_result | B12-UX start → year_intro | B13 quiz bonus | B15 Promise.all | B16d set action (final steps) | YG-V0..V6.3 unchanged | NXG-V0 phase_started_at
+// VERSION: NXG-V3 — ALLOWED_FINAL: + final_riskadj (Risk-Adjusted Standings step ③), − final_awards (dead since YG-V5)
+// LAST MODIFIED: 17 Sep 2026
+// HISTORY: B3 created | B5 auto-calculate + event_result | B12-UX start → year_intro | B13 quiz bonus | B15 Promise.all | B16d set action (final steps) | YG-V0..V6.3 unchanged | NXG-V0 phase_started_at | NXG-V3 final_riskadj
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -21,7 +21,7 @@ const supabase = createClient(
 //   2. action: "next"       → เลื่อนไป phase ถัดไป
 //   3. action: "end"        → จบเกมทันที (→ final = suspense "ใครคือแชมป์")
 //   4. action: "set"        → ตั้ง current_phase ตรงๆ (เฉพาะ final steps) สำหรับ MC step nav
-//                             phase ∈ final | final_podium | final_awards | final_ranking
+//                             phase ∈ final | final_podium | final_ranking | final_riskadj
 // ==============================================
 export async function POST(request: Request) {
   try {
@@ -128,9 +128,9 @@ export async function POST(request: Request) {
 
     // === ACTION: SET FINAL STEP (MC step nav) ===
     // ตั้ง current_phase ตรงๆ — จำกัดเฉพาะ final steps เพื่อให้ MC กระโดดได้อิสระ
-    // (① suspense=final → ② final_podium → ③ final_awards → ④ final_ranking)
+    // (suspense=final → ① final_podium → ② final_ranking → ③ final_riskadj)  — NXG-V3
     if (action === 'set') {
-      const ALLOWED_FINAL = ['final', 'final_podium', 'final_awards', 'final_ranking'];
+      const ALLOWED_FINAL = ['final', 'final_podium', 'final_ranking', 'final_riskadj'];
       const target = body.phase;
 
       if (!ALLOWED_FINAL.includes(target)) {

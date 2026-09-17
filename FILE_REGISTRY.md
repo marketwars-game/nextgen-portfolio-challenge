@@ -1,10 +1,10 @@
 # KKP Next Gen Portfolio Challenge — File Registry
 
 **Location:** วางที่ root ของ repo (`/FILE_REGISTRY.md`) — version control โดย git
-**Last Updated:** NXG-V2 (player invest: lib/risk.ts σ preview · InvestmentPanel Thai + rule chips) — 16 Sep 2026
+**Last Updated:** NXG-V3 (final step ③ Risk-Adjusted Standings · lib/riskScore.ts · YearIntro QR removed) — 17 Sep 2026
 **Repo:** https://github.com/marketwars-game/nextgen-portfolio-challenge
 **Default branch:** `main`
-**Latest tag:** `NXG-V1` (16 Sep) · tag `NXG-V2` after Vercel smoke test · carried tags `YG-V0`..`YG-V6.3`
+**Latest tag:** `NXG-V2` (17 Sep) · tag `NXG-V3` after Vercel smoke test · carried tags `YG-V0`..`YG-V6.3`
 **Event:** พฤ 17 ก.ย. 2569 · 90 นาที · 6 ทีม × 10 คน · freeze tag `NXG-V5-stable` วันพุธ 16 ก.ย.
 **Content source:** KKP Next Gen Portfolio Challenge — Thai Facilitator Guide v1.14 (project knowledge, ไม่อยู่ใน repo)
 
@@ -14,7 +14,7 @@
 - **V0** ✅ fork + config (ไฟล์ตามตารางด้านล่าง)
 - **V1** ✅ จอใหม่ — YearIntroDisplay (Story + 5 headlines + question) · ShockDisplay 🆕 · EventDisplay 3×3 + Reveal Script/Key Lesson · LockedPortfolio 🆕 (มือถือ reveal/shock) · display/play/mc branches · งานเอกสารปิด V0 (README/RUNBOOK/archive YG docs/package.json) ย้ายไป V5
 - **V2** ✅ Player — `lib/risk.ts` 🆕 (σ preview, corr 0.20) · InvestmentPanel (ชื่อไทย + vol + σ + ชิปกติกา + Lock ไทย) — ตาม NXG-DESIGN-V2-Mockup
-- **V3** Timer — `hooks/usePhaseTimer.ts` 🆕 · `components/common/CountdownTimer.tsx` 🆕 · InvestDisplay + InvestmentPanel header (อ่าน `rooms.phase_started_at`)
+- **V3** ✅ Final — `lib/riskScore.ts` 🆕 (Score Sheet formula) · `FinalRiskAdjusted.tsx` 🆕 = step ③ `final_riskadj` · YearIntro rejoin QR ตัดออก — ตาม NXG-DESIGN-V3-Mockup (scope เดิม "Timer" เลื่อนออก — ยังไม่กำหนด batch)
 - **V3.5** MC Transfer Tool — `app/api/players/transfer/route.ts` 🆕 · `components/mc/TransferMC.tsx` 🆕 · `components/display/TransferOverlay.tsx` 🆕 (mini-game money moves; affects Highest Ending Value only)
 - **V4** Thai sweep หน้าผู้เล่น · **V5** dry-run fixes + `docs/NXG_TechSpec_v1.md` + tag stable
 
@@ -46,6 +46,20 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 ```
 
 ---
+
+## 🔧 ไฟล์ที่แก้ใน NXG-V3 (6 แก้ + 2 ใหม่ + registry) — 17 Sep 2026
+| ไฟล์ | แก้อะไร |
+|------|---------|
+| `lib/riskScore.ts` 🆕 | `cashCagr()` · `computeRiskScores(players)` → `RiskScore[]` (cagr · σ RMS 5 รอบ จาก `round_returns[r].portfolio_used` ผ่าน `portfolioVol` · score · belowCash · complete · worstRound · moneyRank) · `compareRiskAdjusted` (score desc → σ asc → worst round → id; Below Cash ท้าย; ข้อมูลไม่ครบท้ายสุด) · ไม่แตะ DB |
+| `components/display/FinalRiskAdjusted.tsx` 🆕 | จอ ③ — ตาราง 6 คอลัมน์ (อันดับ · ทีม + ชิป ▲/▼ จาก #n เทียบอันดับเงิน · มูลค่า · CAGR · σ · Score) · แถว BELOW CASH แดงท้าย · bar = score/top · header เงินสด CAGR + ρ · footer สูตร · row-fit + wave animation แบบ FinalRanking |
+| `components/display/FinalDisplay.tsx` | `FinalPhase` + `'final_riskadj'` → `<FinalRiskAdjusted>` |
+| `components/display/YearIntroDisplay.tsx` | ตัด rejoin QR corner card + import `qrcode.react` · props เหลือ `{ round }` |
+| `app/display/[roomId]/page.tsx` | final branch รับ `final_riskadj` · `YearIntroDisplay round` อย่างเดียว (`joinUrl` ยังใช้กับ Lobby) |
+| `app/api/game/phase/route.ts` | `ALLOWED_FINAL = ['final','final_podium','final_ranking','final_riskadj']` (ถอด `final_awards` ที่ตายแล้ว) |
+| `app/mc/[roomId]/page.tsx` | Final step nav: order + ปุ่ม `③ Risk-Adj` |
+| `components/mc/FinalMC.tsx` | script 4 ข้อ (+ ③ Risk-Adj) · กล่อง RISK-ADJUSTED list (ชื่อ · ▲/▼ · CAGR · σ · Score/BELOW CASH) ให้ MC อ่านประกอบจอ |
+
+**V3 smoke test (บน Vercel):** จบ Ch5 → final → ① Podium → ② Ranking → ③ Risk-Adj: 6 แถวพอดี 720px · ชิป ▲/▼ ตรงกับอันดับเงิน · Score ตรง Score Sheet (เทียบ 1 ทีมด้วยมือ) · ◀ ▶ วนครบ 4 step · year_intro ทุกรอบไม่มี QR มุมขวา · Lobby ยังมี QR
 
 ## 🔧 ไฟล์ที่แก้ใน NXG-V2 (1 แก้ + 1 ใหม่) — 16 Sep 2026
 | ไฟล์ | แก้อะไร |
@@ -139,7 +153,7 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 | Players | Join + reconnect (🔧 YG-V0: เงินเริ่ม 1,000,000) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/players/route.ts |
 | Player Portfolio | 🔧 YG-V3 — step validation `% ALLOCATION_STEP` (fix 5% reject) · Save allocation | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/players/portfolio/route.ts |
 | Player Quiz | (dormant ใน YG-V0) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/players/quiz/route.ts |
-| Game Phase | 🔧 NXG-V0 — stamp phase_started_at · Start/Next/End/Set + auto-calc returns (loop COMPANIES → generic) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/game/phase/route.ts |
+| Game Phase | 🔧 NXG-V3 — set allowlist + final_riskadj · NXG-V0 stamp phase_started_at · Start/Next/End/Set + auto-calc returns | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/game/phase/route.ts |
 | Game Calculate | Standalone calculate (fallback) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/game/calculate/route.ts |
 | Health Check | Health endpoint | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/app/api/health/route.ts |
 
@@ -150,6 +164,7 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 | ไฟล์ | หน้าที่ | Raw URL |
 |------|--------|---------|
 | risk | 🆕 NXG-V2 — `portfolioVol` / `formatVol` (σ preview, Guide §3.2) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/risk.ts |
+| riskScore | 🆕 NXG-V3 — `computeRiskScores` / `cashCagr` / `compareRiskAdjusted` (Score Sheet formula, final step ③) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/riskScore.ts |
 | constants | 🔧 NXG-V0 — rewritten: 9 assets · 5 challenges · CHALLENGES/SHOCKS · rules every round | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/constants.ts |
 | game-engine | 🔧 NXG-V0 — shock phase on SHOCK_ROUNDS · (YG-V4 reveal · YG-V0 pure allocation loop) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/game-engine.ts |
 | supabase | Supabase client | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/lib/supabase.ts |
@@ -180,17 +195,18 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 |------|--------|---------|
 | DisplayHeader | header (phase progress + challenge) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/DisplayHeader.tsx |
 | LobbyDisplay | 🔧 NXG-V0 — ป้าย Next Gen · lobby (QR + teams) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/LobbyDisplay.tsx |
-| YearIntroDisplay | challenge brief splash — ⏳ V1: Story + 5 headlines + question | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/YearIntroDisplay.tsx |
+| YearIntroDisplay | challenge brief — NXG-V1 Story + 5 headlines + question · 🔧 NXG-V3 QR ตัดออก | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/YearIntroDisplay.tsx |
 | MarketOpenDisplay | market-open splash | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/MarketOpenDisplay.tsx |
 | InvestDisplay | 🔧 YG-V4 — masked submit wall (LiveNameBoard invest, no bars) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/InvestDisplay.tsx |
 | RevealDisplay 🆕 | 🔧 YG-V4 — reveal phase: all teams' allocations together (LiveNameBoard reveal) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/RevealDisplay.tsx |
 | EventDisplay | ⏳ V1: 3×3 grid + Reveal Script/Key Lesson · (YG-V3 getAvailableAssets filter) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/EventDisplay.tsx |
 | ResultsDisplay | heatmap ผลรอบ | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/ResultsDisplay.tsx |
 | LeaderboardDisplay | podium + ranking (racing) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/LeaderboardDisplay.tsx |
-| FinalDisplay | สรุปจบเกม (router **3-step**: final→podium→ranking) — 🔧 YG-V5 | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/FinalDisplay.tsx |
+| FinalDisplay | สรุปจบเกม (router **4-step**: final→podium→ranking→riskadj) — 🔧 NXG-V3 | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/FinalDisplay.tsx |
 | FinalPodium | เฉลย 3→2→1 + confetti — 🔧 YG-V5 ตัด award pill | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/FinalPodium.tsx |
 | FinalAwards | 💤 **dormant** ตั้งแต่ YG-V5 (ไม่ import — Awards step ถูกตัด) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/FinalAwards.tsx |
 | FinalRanking | อันดับทีมจริงล้วน — 🔧 YG-V5 ตัด benchmark + Smart Diversifier (คง 🎯/🧺) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/FinalRanking.tsx |
+| FinalRiskAdjusted | 🆕 NXG-V3 — step ③ Risk-Adjusted Standings (Return/Risk) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/FinalRiskAdjusted.tsx |
 | LiveNameBoard | 🔧 YG-V4 — invest masked + reveal variant (all allocations) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/LiveNameBoard.tsx |
 | LiveNameFeed | research sidebar feed | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/LiveNameFeed.tsx |
 | AnimatedBackdrop | backdrop (particle + grid + glow) | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/display/AnimatedBackdrop.tsx |
@@ -210,7 +226,7 @@ https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/ma
 |------|--------|---------|
 | ResultsMC | สรุปผลรอบ | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/mc/ResultsMC.tsx |
 | LeaderboardMC | ดูอันดับทุกทีม | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/mc/LeaderboardMC.tsx |
-| FinalMC | จอ MC ปิดเกม — 🔧 YG-V5 script 2-step + ตัด awards box | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/mc/FinalMC.tsx |
+| FinalMC | จอ MC ปิดเกม — 🔧 NXG-V3 script 3-step + risk-adjusted list | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/mc/FinalMC.tsx |
 | ResearchMC | 💤 dormant | https://raw.githubusercontent.com/marketwars-game/nextgen-portfolio-challenge/main/components/mc/ResearchMC.tsx |
 
 ---

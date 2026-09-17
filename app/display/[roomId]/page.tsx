@@ -1,7 +1,7 @@
 // FILE: app/display/[roomId]/page.tsx — Display screen (shell)
-// VERSION: NXG-V1 — branch 'shock' → ShockDisplay (inside header shell, like reveal); EventDisplay phase prop narrowed (golden_deal removed)
-// LAST MODIFIED: 16 Sep 2026
-// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V2 fit-to-screen | YG-V4 reveal phase | YG-V6 YearIntro rejoin QR props + final_awards cleanup | NXG-V1 shock branch
+// VERSION: NXG-V3 — final branch + 'final_riskadj' (step ③ Risk-Adjusted Standings); YearIntroDisplay no longer takes roomId/joinUrl (QR removed)
+// LAST MODIFIED: 17 Sep 2026
+// HISTORY: B1..B20 (kids-camp lineage) | YG-V0 fork | YG-V1 re-theme | YG-V2 fit-to-screen | YG-V4 reveal phase | YG-V6 YearIntro rejoin QR props + final_awards cleanup | NXG-V1 shock branch | NXG-V3 final_riskadj + drop YearIntro QR props
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -243,14 +243,14 @@ export default function DisplayScreen() {
   let content;
   if (phase === 'lobby') {
     content = <FitStage scale={zoom}><LobbyDisplay players={players} roomId={roomId} joinUrl={joinUrl} /></FitStage>;
-  } else if (phase === 'final' || phase === 'final_podium' || phase === 'final_ranking') {  // YG-V6: final_awards cut (dead code removed)
+  } else if (phase === 'final' || phase === 'final_podium' || phase === 'final_ranking' || phase === 'final_riskadj') {  // NXG-V3: + final_riskadj
     content = (
       <FitStage scale={zoom}>
         <FinalDisplay key={`final-${replayTick}`} players={players} phase={phase as any} animate={finalAnimate} playSfx={playSfx} />
       </FitStage>
     );
   } else if (phase === 'year_intro') {
-    content = <FitStage scale={zoom}><YearIntroDisplay round={round} roomId={roomId} joinUrl={joinUrl} /></FitStage>;
+    content = <FitStage scale={zoom}><YearIntroDisplay round={round} /></FitStage>;  // NXG-V3: QR removed from this screen
   } else if (phase === 'market_open') {
     content = <FitStage scale={zoom}><MarketOpenDisplay round={round} /></FitStage>;
   } else {
